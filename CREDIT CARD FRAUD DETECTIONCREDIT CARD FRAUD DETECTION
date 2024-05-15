@@ -1,0 +1,31 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import classification_report, accuracy_score
+
+# Load the dataset (replace 'creditcard.csv' with your dataset file)
+data = pd.read_csv('creditcard.csv')
+
+# Let's assume 'Class' column contains labels (0 for normal transactions, 1 for fraudulent transactions)
+
+# Separate features and labels
+X = data.drop('Class', axis=1)
+y = data['Class']
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Training the Isolation Forest model
+model = IsolationForest(contamination=0.01, random_state=42)  # contamination represents the expected proportion of outliers in the data
+model.fit(X_train)
+
+# Predicting the labels for the test set
+y_pred = model.predict(X_test)
+# Since Isolation Forest predicts -1 for outliers and 1 for inliers, we need to convert them to match our label format (0 for normal, 1 for fraud)
+y_pred[y_pred == 1] = 0  # Inliers (normal transactions)
+y_pred[y_pred == -1] = 1  # Outliers (fraudulent transactions)
+
+# Evaluating the model
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
