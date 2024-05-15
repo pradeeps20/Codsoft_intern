@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+
+# Sample data (you can replace this with your own dataset)
+data = {'text': ['A thrilling action movie with lots of explosions',
+                 'A romantic comedy about two people falling in love',
+                 'A horror movie with lots of scares and suspense',
+                 'An animated film for children with colorful characters'],
+        'genre': ['Action', 'Romantic Comedy', 'Horror', 'Animation']}
+df = pd.DataFrame(data)
+
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(df['text'], df['genre'], test_size=0.2, random_state=42)
+
+# Vectorizing text data
+vectorizer = CountVectorizer()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+# Training Naive Bayes classifier
+classifier = MultinomialNB()
+classifier.fit(X_train_vec, y_train)
+
+# Making predictions
+y_pred = classifier.predict(X_test_vec)
+
+# Evaluating accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
